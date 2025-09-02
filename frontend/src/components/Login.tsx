@@ -4,10 +4,44 @@ import { FaFacebook } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
 import { changeLoginState } from '../store/slice';
+import axios from 'axios';
+import { useState } from 'react';
 
 const Login = () => {
      const selector = useSelector((state: RootState) => state.social)
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+    
+      await axios.post("http://localhost:5000/create", formData);
+
+      console.log("Data submitted successfully!");
+      setFormData({ name: "", email: "", password: "" });
+
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    console.log(formData);
+  };
+
     return ( <>
 
    <div className="flex h-screen flex-col md:flex-row">
@@ -44,11 +78,13 @@ const Login = () => {
             <>   <input
                     type="text"
                     placeholder="email"
+                    name="email"
                     className="px-4 py-3 bg-gray-100 rounded-lg border border-gray-300 focus:outline-none focus:gray-2 focus:gray-blue-500 transition text-gray-900 placeholder-gray-500 hover:border-gray-400"
                     autoComplete="email"
                 />
                 <input
                     type="password"
+                    name="password"
                     placeholder="Password"
                     className="px-4 py-3 rounded-lg border bg-gray-100 border-gray-300 focus:outline-none focus:gray-2 focus:gray-blue-500 transition text-gray-900 placeholder-gray-500 hover:border-gray-400"
                     autoComplete="current-password"
@@ -77,7 +113,9 @@ const Login = () => {
                 </>
              
             </form>:
-             <form className="flex flex-col gap-4 md:gap-6 bg-[#ffffff41] bg-opacity-0 rounded-xl shadow-lg p-6 md:p-10 max-w-full md:max-w-md mx-auto mt-20 md:mt-8 w-full">
+             <form
+             onSubmit={handleSubmit}
+              className="flex flex-col gap-4 md:gap-6 bg-[#ffffff41] bg-opacity-0 rounded-xl shadow-lg p-6 md:p-10 max-w-full md:max-w-md mx-auto mt-20 md:mt-8 w-full">
                 <div className="flex flex-col md:flex-row gap-4 md:gap-6 justify-center mb-4 md:mb-6">
                     <button
                         type="button"
@@ -101,20 +139,26 @@ const Login = () => {
                             
                 
                 <>   <input
+                  onChange={handleChange}
                     type="text"
-                    placeholder="Username"
+                    placeholder="Name"
+                    name="name"
                     className="px-4 py-3 bg-gray-100 rounded-lg border border-gray-300 focus:outline-none focus:gray-2 focus:gray-blue-500 transition text-gray-900 placeholder-gray-500 hover:border-gray-400"
-                    autoComplete="username"
+                    autoComplete="name"
                 />
                 <input
+                  onChange={handleChange}
                     type="text"
                     placeholder="Email"
+                    name="email"
                     className="px-4 py-3 bg-gray-100 rounded-lg border border-gray-300 focus:outline-none focus:gray-2 focus:gray-blue-500 transition text-gray-900 placeholder-gray-500 hover:border-gray-400"
                     autoComplete="email"
                 />
                 <input
+                  onChange={handleChange}
                     type="password"
                     placeholder="Password"
+                    name='password'
                     className="px-4 py-3 rounded-lg border bg-gray-100 border-gray-300 focus:outline-none focus:gray-2 focus:gray-blue-500 transition text-gray-900 placeholder-gray-500 hover:border-gray-400"
                     autoComplete="current-password"
                 />
