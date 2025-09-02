@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+.bg-loginbg {
+  background-image: url("./assets/loginimg.jpg");
+}

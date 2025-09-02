@@ -1,10 +1,25 @@
-
+import { BrowserRouter,Routes , Route } from 'react-router-dom'
 import './App.css'
+// import Home from './components/Home'
+import Login from './components/Login'
 
 function App() {
 
   return (
-  <><p className='text-red-300'>aya</p></>
+  <>
+  <BrowserRouter>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      {/* <Route
+      path="/"
+      element={
+       user ? <Home /> : <Login />
+      }
+      /> */}
+    </Routes>
+  </BrowserRouter>
+  
+  </>
   )
 }
 
