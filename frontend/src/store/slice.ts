@@ -5,6 +5,7 @@ interface User {
   name: string;
   email: string;
   createdAt?: string;
+
   friends?: string[];
 }
 
@@ -87,7 +88,7 @@ export const {
   logout,
   loginSuccess,
   addFriend,
-  
+ 
 } = aSlice.actions;
 
 export default aSlice.reducer;
