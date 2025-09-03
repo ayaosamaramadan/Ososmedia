@@ -1,47 +1,59 @@
-import { useSelector } from "react-redux";
-import type { RootState } from "../store/store";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Navi from "./Navi";
+import UserInfo from "./UserInfo";
+import { useEffect, useState } from "react";
 
 const Home = () => {
-  const user = useSelector((state: RootState) => state.social.user);
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.social.isAuthenticated
-  );
+  const [Allusers, setAllUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    console.log("Fetching all users...");
+    fetch("http://localhost:5000/allusers")
+      .then((res) => {
+        console.log("Response status:", res.status);
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Fetched data:", data);
+        // Check if data has users array
+        if (data.success && data.users) {
+          setAllUsers(data.users);
+        } else if (Array.isArray(data)) {
+          setAllUsers(data);
+        } else {
+          setAllUsers([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching users:", err);
+        setAllUsers([]);
+      });
+  }, []);
 
   return (
     <>
       <Navi />
 
+      <UserInfo />
       <div className="container mx-auto px-4 py-8">
-        {isAuthenticated && user ? (
-          <div className="bg-white shadow rounded-lg p-6">
-            <h1 className="text-3xl font-bold mb-4">
-              Welcome back, {user.name}! 🎉
-            </h1>
-
-            <div className="space-y-2 text-gray-700">
+        <h2 className="text-2xl font-bold mb-4">All Users</h2>
+      </div>
+      {Allusers && Allusers.length > 0 ? (
+        <ul className="space-y-2">
+          {Allusers.map((user) => (
+            <li key={user._id} className="bg-white shadow rounded-lg p-4">
+              <p>
+                <strong>Name:</strong> {user.name}
+              </p>
               <p>
                 <strong>Email:</strong> {user.email}
               </p>
-              <p>
-                <strong>User ID:</strong> {user._id}
-              </p>
-              {user.createdAt && (
-                <p>
-                  <strong>Joined:</strong>{" "}
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </p>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <h1 className="text-2xl font-bold text-gray-600">
-              Please log in to view this page
-            </h1>
-          </div>
-        )}
-      </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No users found.</p>
+      )}
     </>
   );
 };

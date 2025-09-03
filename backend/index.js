@@ -89,3 +89,13 @@ app.post("/api/login", async (req, res) => {
     });
   }
 });
+
+
+app.get("/allusers", async (req, res) => {
+  try {
+    const users = await userModel.find({});
+    res.json({ success: true, users });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error fetching users", error: err.message });
+  }
+});
