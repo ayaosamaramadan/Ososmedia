@@ -1,6 +1,6 @@
 import { FcGoogle } from "react-icons/fc";
-import { loginform  } from "../store/slice";
-import { isLogin } from "../store/slice";
+import { loginform, loginSuccess } from "../store/slice";
+// import { isLogin } from "../store/slice";
 import { FaFacebook } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
@@ -18,30 +18,37 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-           const response =await axios.post(
+      const response = await axios.post(
         "http://localhost:5000/api/login",
         formData
       );
 
       if (response.data.success) {
+        console.log("Login response:", response.data);
+        console.log("User data:", response.data.user);
+        console.log("Token:", response.data.token);
+
         toast.success("Login successful!");
-     setFormData({ email: "", password: "" });
-      dispatch(isLogin(true));
-         } else {
+        setFormData({ email: "", password: "" });
+        dispatch(
+          loginSuccess({
+            user: response.data.user,
+            token: response.data.token,
+          })
+        );
+      } else {
         toast.error("Login failed. Please check your credentials.");
       }
     } catch (error) {
-
-
-      console.error("Login error:",error);
-        toast.error("Login failed. Please try again.");
+      console.error("Login error:", error);
+      toast.error("Login failed. Please try again.");
     }
   };
 
   return (
     <>
       <form
-      method="POST"
+        method="POST"
         onSubmit={handleSubmit}
         className="flex flex-col gap-4 md:gap-6 bg-[#ffffff41] bg-opacity-0 rounded-xl shadow-lg p-6 md:p-10 max-w-full md:max-w-md mx-auto mt-8 md:mt-20 w-full"
       >

@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
-app.use(express.json()); // Add this to parse JSON requests
+app.use(express.json()); 
 
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -51,8 +51,6 @@ app.post("/create", async (req, res) => {
   res.send({ success: true, data: "Data created", data: data });
 });
 
-
-
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -69,7 +67,13 @@ app.post("/api/login", async (req, res) => {
       res.json({
         success: true,
         message: "Login successful",
-        data: user,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          createdAt: user.createdAt,
+        },
+        token: "dummy-token-123",
       });
     } else {
       res.status(401).json({
