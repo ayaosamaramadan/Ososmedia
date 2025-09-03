@@ -16,7 +16,6 @@ export interface theState {
   friends?: string[];
 }
 
-// Get initial state from localStorage
 const getInitialState = (): theState => {
   const storedUser = localStorage.getItem("user");
   const storedToken = localStorage.getItem("authToken");
@@ -46,16 +45,14 @@ export const aSlice = createSlice({
     ) => {
       state.isAuthenticated = true;
       state.user = action.payload.user;
-
-      // Store in localStorage
-      localStorage.setItem("user", JSON.stringify(action.payload.user));
+localStorage.setItem("user", JSON.stringify(action.payload.user));
       localStorage.setItem("authToken", action.payload.token);
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
 
-      // Clear localStorage
+     
       localStorage.removeItem("user");
       localStorage.removeItem("authToken");
     },
@@ -68,8 +65,7 @@ export const aSlice = createSlice({
         if (!state.user.friends.includes(action.payload)) {
           state.user.friends.push(action.payload);
 
-          // Update localStorage
-          localStorage.setItem("user", JSON.stringify(state.user));
+        localStorage.setItem("user", JSON.stringify(state.user));
           console.log("Friend added successfully! Friend ID:", action.payload);
           console.log("Total friends:", state.user.friends.length);
         } else {
@@ -77,18 +73,10 @@ export const aSlice = createSlice({
         }
       }
     },
-
-   
   },
 });
 
-export const {
-  loginform,
-  isLogin,
-  logout,
-  loginSuccess,
-  addFriend,
- 
-} = aSlice.actions;
+export const { loginform, isLogin, logout, loginSuccess, addFriend } =
+  aSlice.actions;
 
 export default aSlice.reducer;

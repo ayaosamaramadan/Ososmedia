@@ -16,8 +16,9 @@ const Home = () => {
       })
       .then((data) => {
         console.log("Fetched data:", data);
-        // Check if data has users array
-        if (data.success && data.users) {
+      
+        
+                if (data.success && data.users) {
           setAllUsers(data.users);
         } else if (Array.isArray(data)) {
           setAllUsers(data);
