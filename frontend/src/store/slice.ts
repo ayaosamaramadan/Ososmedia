@@ -5,12 +5,14 @@ interface User {
   name: string;
   email: string;
   createdAt?: string;
+  friends?: string[];
 }
 
 export interface theState {
   areYouLoggedIn: boolean;
   isAuthenticated: boolean;
   user: User | null;
+  friends?: string[];
 }
 
 // Get initial state from localStorage
@@ -56,9 +58,36 @@ export const aSlice = createSlice({
       localStorage.removeItem("user");
       localStorage.removeItem("authToken");
     },
+
+    addFriend: (state, action: PayloadAction<string>) => {
+      if (state.user) {
+        if (!state.user.friends) {
+          state.user.friends = [];
+        }
+        if (!state.user.friends.includes(action.payload)) {
+          state.user.friends.push(action.payload);
+
+          // Update localStorage
+          localStorage.setItem("user", JSON.stringify(state.user));
+          console.log("Friend added successfully! Friend ID:", action.payload);
+          console.log("Total friends:", state.user.friends.length);
+        } else {
+          console.log("User is already a friend!");
+        }
+      }
+    },
+
+   
   },
 });
 
-export const { loginform, isLogin, logout, loginSuccess } = aSlice.actions;
+export const {
+  loginform,
+  isLogin,
+  logout,
+  loginSuccess,
+  addFriend,
+  
+} = aSlice.actions;
 
 export default aSlice.reducer;

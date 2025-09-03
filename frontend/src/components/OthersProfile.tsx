@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import AddFriendButton from "./AddFriendButton";
 
 const OthersProfile = () => {
 
@@ -43,6 +44,8 @@ const OthersProfile = () => {
               <p>
                 <strong>Email:</strong> {user.email}
               </p>
+
+              <AddFriendButton userId={user._id} />
             </li>
             </Link>
           ))}
