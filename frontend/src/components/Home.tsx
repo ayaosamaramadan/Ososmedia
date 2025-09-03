@@ -1,5 +1,14 @@
+import Navi from "./Navi";
+
 const Home = () => {
-    return ( <div>Home</div> );
+    return ( <>
+
+    <Navi/>
+    
+    
+    
+    
+    </> );
 }
 
 export default Home;

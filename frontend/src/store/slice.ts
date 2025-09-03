@@ -21,9 +21,13 @@ export const aSlice = createSlice({
     ,
     isLogin: (state, action) => {
       state.isAuthenticated = action.payload
-    }
+    },
+
+    logout: (state) => {
+      state.isAuthenticated = false
+  },
   },
 })
-export const { loginform,isLogin } = aSlice.actions
+export const { loginform,isLogin,logout } = aSlice.actions
 
 export default aSlice.reducer
