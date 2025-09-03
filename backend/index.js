@@ -10,8 +10,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
+app.use(express.json()); // Add this to parse JSON requests
 
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -22,20 +24,64 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-
-const userSchema = new mongoose.Schema({
-  name: String,
-   email:String,
- password: String,
-},{
-  timestamps: true,
+// Health check route
+app.get("/api/health", (req, res) => {
+  res.json({
+    message: "Server is running!",
+    timestamp: new Date().toISOString(),
+  });
 });
+
+const userSchema = new mongoose.Schema(
+  {
+    name: String,
+    email: String,
+    password: String,
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const userModel = mongoose.model("Auser", userSchema);
 
-
-app.post("/create", async(req, res) => {
-const data = new userModel(req.body);
+app.post("/create", async (req, res) => {
+  const data = new userModel(req.body);
   await data.save();
-  res.send({success:true, data:"Data created",data : data} );
+  res.send({ success: true, data: "Data created", data: data });
+});
+
+
+
+app.post("/api/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
+    }
+
+    const user = await userModel.findOne({ email, password });
+    if (user) {
+      res.json({
+        success: true,
+        message: "Login successful",
+        data: user,
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
 });
