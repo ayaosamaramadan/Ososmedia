@@ -1,45 +1,53 @@
-import { BrowserRouter,Routes , Route } from 'react-router-dom'
-import './App.css'
-// import Home from './components/Home'
-import Auth from './components/Auth'
-import { store } from './store/store'
-import { Provider } from 'react-redux'
-import { Toaster } from 'react-hot-toast';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./App.css";
+import Auth from "./components/Auth";
+import { store, type RootState } from "./store/store";
+import { Provider, useSelector } from "react-redux";
+import { Toaster } from "react-hot-toast";
+import Home from "./components/Home";
 
-
-// import Login from './components/Login'
-
-function App() {
+function AppRoutes() {
+  const isAuth = useSelector(
+    (state: RootState) => state.social.isAuthenticated
+  );
 
   return (
-  <>
-   <Provider store={store}>
-<Toaster
-  position="top-center"
-  reverseOrder={true}
-  toastOptions={{
-    style: {
-      margin: '40px',
-      background: '#363636',
-      color: '#fff',
-    },
-  }}
-/>
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Auth />} />
-      {/* <Route
-      path="/"
-      element={
-       user ? <Home /> : <Login />
-      }
-      /> */}
-    </Routes>
-  </BrowserRouter>
-  </Provider>
-  
-  </>
-  )
+    <BrowserRouter>
+      <Routes>
+       <Route
+          path="/"
+          element={isAuth ? <Navigate to="/home" replace /> : <Auth />}
+        />
+ <Route
+          path="/home"
+          element={isAuth ? <Home /> : <Navigate to="/" replace />}
+        />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <>
+      <Provider store={store}>
+        <Toaster
+          position="top-center"
+          reverseOrder={true}
+          toastOptions={{
+            style: {
+              margin: "40px",
+              background: "#363636",
+              color: "#fff",
+            },
+          }}
+        />
+        <AppRoutes />
+      </Provider>
+    </>
+  );
+}
+
+export default App;

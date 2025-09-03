@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FcGoogle } from "react-icons/fc";
-import { changeLoginState } from "../store/slice";
+import { loginform  } from "../store/slice";
+import { isLogin } from "../store/slice";
 import { FaFacebook } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
@@ -26,6 +26,7 @@ const LoginForm = () => {
       if (response.data.success) {
         toast.success("Login successful!");
      setFormData({ email: "", password: "" });
+      dispatch(isLogin(true));
          } else {
         toast.error("Login failed. Please check your credentials.");
       }
@@ -65,7 +66,6 @@ const LoginForm = () => {
           </button>
         </div>
         <>
-          {" "}
           <input
             type="text"
             placeholder="email"
@@ -99,7 +99,7 @@ const LoginForm = () => {
                 className="text-gray-900 underline hover:text-gray-700 transition-colors font-semibold"
                 tabIndex={0}
                 onClick={() => {
-                  dispatch(changeLoginState());
+                  dispatch(loginform());
                 }}
               >
                 Create an account

@@ -2,23 +2,28 @@ import { createSlice } from '@reduxjs/toolkit'
 // import type { PayloadAction } from '@reduxjs/toolkit'
 
 export interface theState {
-  areYouLoggedIn: boolean
+  areYouLoggedIn: boolean;
+  isAuthenticated: boolean;
 }
 
 const initialState: theState = {
   areYouLoggedIn: true,
+  isAuthenticated: false,
 }
 
 export const aSlice = createSlice({
   name: 'socialMedia',
   initialState,
   reducers: {
-   changeLoginState: (state) => {
+   loginform: (state) => {
       state.areYouLoggedIn = !state.areYouLoggedIn
     }
-  
+    ,
+    isLogin: (state, action) => {
+      state.isAuthenticated = action.payload
+    }
   },
 })
-export const { changeLoginState } = aSlice.actions
+export const { loginform,isLogin } = aSlice.actions
 
 export default aSlice.reducer

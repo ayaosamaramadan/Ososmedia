@@ -1,5 +1,6 @@
 import { FaFacebook } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';import { changeLoginState } from '../store/slice';
+import { useDispatch } from 'react-redux';
+import { loginform } from '../store/slice';
 import axios from 'axios';
 import { useState } from 'react';import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
@@ -20,10 +21,18 @@ const RegForm = () => {
     try {
     
       await axios.post("http://localhost:5000/create", formData);
-    toast.success('successfully signed up!');
+    if (!formData.name || !formData.email || !formData.password) {
+        toast.error('Please fill in all fields!');
+        return;
+      }
+      else{
+      setFormData({ name: "", email: "", password: "" });   
+       toast.success('successfully signed up!');
    
       console.log("Data submitted successfully!");
-      setFormData({ name: "", email: "", password: "" });     
+      }
+
+    
 
     } catch (error) {
       console.error("Error submitting data:", error);
@@ -107,7 +116,7 @@ const RegForm = () => {
                             className="text-gray-900 underline hover:text-gray-700 transition-colors font-semibold"
                             tabIndex={0}
                             onClick={() => {
-                                dispatch(changeLoginState())
+                                dispatch(loginform())
                             }}
                         >
                             Sign In
