@@ -123,13 +123,11 @@ app.get("/allusers", async (req, res) => {
     const users = await userModel.find({});
     res.json({ success: true, users });
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error fetching users",
-        error: err.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error fetching users",
+      error: err.message,
+    });
   }
 });
 
@@ -187,7 +185,7 @@ app.post("/uploadimage", upload.single("image"), async (req, res) => {
       });
     }
 
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const imageUrl = `http://localhost:${PORT}/uploads/${req.file.filename}`;
 
     res.json({
       success: true,
@@ -217,7 +215,7 @@ app.post("/updatepic", async (req, res) => {
 
     const user = await userModel.findByIdAndUpdate(
       userId,
-      { profilePicture: profilePicture || "/src/assets/Profile-PNG-Photo.png" },
+      { profilePicture: profilePicture },
       { new: true }
     );
 

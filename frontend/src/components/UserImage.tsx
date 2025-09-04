@@ -14,6 +14,22 @@ const UserImage = ({ user }: { user: User }) => {
   );
   const dispatch = useDispatch();
 
+  // Helper function to get the correct image URL
+  const getImageUrl = (profilePicture: string) => {
+    if (!profilePicture) return defaultProfilePic;
+
+    // If it starts with http, it's already a full URL
+    if (profilePicture.startsWith("http")) return profilePicture;
+
+    // If it starts with /uploads, it's a backend served image
+    if (profilePicture.startsWith("/uploads")) {
+      return `http://localhost:5000${profilePicture}`;
+    }
+
+    // Otherwise, it's a frontend asset
+    return profilePicture;
+  };
+
   const handleEditProfilePicture = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -57,6 +73,7 @@ const UserImage = ({ user }: { user: User }) => {
         if (updateResponse.ok) {
           const updateResult = await updateResponse.json();
           dispatch(setUser(updateResult.user));
+          setPreviewImage(""); // Clear preview after successful update
           alert("Profile picture updated successfully!");
         }
       }
@@ -69,7 +86,7 @@ const UserImage = ({ user }: { user: User }) => {
   return (
     <>
       <img
-        src={previewImage || user.profilePicture || defaultProfilePic}
+        src={previewImage || getImageUrl(user.profilePicture)}
         alt={`${user.name}'s profile`}
         className="w-24 h-24 rounded-full object-cover mb-4 border-2 border-gray-300"
         onError={(e) => {
