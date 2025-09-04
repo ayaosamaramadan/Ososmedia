@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navi from "./Navi";
 import UserInfo from "./UserInfo";
 import { useEffect, useState } from "react";
+import UserImage from "./UserImage";
 
 const Home = () => {
   const [Allusers, setAllUsers] = useState<any[]>([]);
@@ -44,6 +45,9 @@ const Home = () => {
         <ul className="space-y-2">
           {Allusers.map((user) => (
            <Link to={`/user/${user._id}`} key={user._id} className="block bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition">
+              <UserImage
+            user={user}
+          />
              <li key={user._id} className="bg-white shadow rounded-lg p-4">
               <p>
                 <strong>Name:</strong> {user.name}

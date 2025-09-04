@@ -1,11 +1,11 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-interface User {
+export interface User {
   _id: string;
   name: string;
   email: string;
   createdAt?: string;
-
+  profilePicture: string;
   friends?: string[];
 }
 
@@ -45,14 +45,13 @@ export const aSlice = createSlice({
     ) => {
       state.isAuthenticated = true;
       state.user = action.payload.user;
-localStorage.setItem("user", JSON.stringify(action.payload.user));
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
       localStorage.setItem("authToken", action.payload.token);
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
 
-     
       localStorage.removeItem("user");
       localStorage.removeItem("authToken");
     },
@@ -65,7 +64,7 @@ localStorage.setItem("user", JSON.stringify(action.payload.user));
         if (!state.user.friends.includes(action.payload)) {
           state.user.friends.push(action.payload);
 
-        localStorage.setItem("user", JSON.stringify(state.user));
+          localStorage.setItem("user", JSON.stringify(state.user));
           console.log("Friend added successfully! Friend ID:", action.payload);
           console.log("Total friends:", state.user.friends.length);
         } else {
@@ -73,10 +72,15 @@ localStorage.setItem("user", JSON.stringify(action.payload.user));
         }
       }
     },
+
+    setUser: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+      localStorage.setItem("user", JSON.stringify(action.payload));
+    },
   },
 });
 
-export const { loginform, isLogin, logout, loginSuccess, addFriend } =
+export const { loginform, isLogin, logout, loginSuccess, addFriend, setUser } =
   aSlice.actions;
 
 export default aSlice.reducer;

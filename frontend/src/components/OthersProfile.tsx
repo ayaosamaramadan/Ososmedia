@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import AddFriendButton from "./AddFriendButton";
+import UserImage from "./UserImage";
 
 const OthersProfile = () => {
 
@@ -38,6 +39,9 @@ const OthersProfile = () => {
           {Allusers.filter((user) => user._id === id).map((user) => (
            <Link to={`/user/${user._id}`} key={user._id} className="block bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition">
              <li key={user._id} className="bg-white shadow rounded-lg p-4">
+                <UserImage
+            user={user}
+          />
               <p>
                 <strong>Name:</strong> {user.name}
               </p>

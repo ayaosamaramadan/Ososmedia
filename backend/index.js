@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import multer from "multer";
+import path from "path";
 
 dotenv.config();
 
@@ -9,8 +11,27 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      Date.now() +
+        "-" +
+        Math.round(Math.random() * 1e9) +
+        path.extname(file.originalname)
+    );
+  },
+});
+
+const upload = multer({ storage: storage });
+
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());
+app.use("/uploads", express.static("uploads")); // Serve uploaded files
 
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -37,7 +58,11 @@ const userSchema = new mongoose.Schema(
     name: String,
     email: String,
     password: String,
-    friends: [String]
+    friends: [String],
+    profilePicture: {
+      type: String,
+      default: "/src/assets/Profile-PNG-Photo.png",
+    },
   },
   {
     timestamps: true,
@@ -72,6 +97,8 @@ app.post("/api/login", async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
+          profilePicture: user.profilePicture,
+          friends: user.friends,
           createdAt: user.createdAt,
         },
         token: "dummy-token-123",
@@ -91,16 +118,20 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-
 app.get("/allusers", async (req, res) => {
   try {
     const users = await userModel.find({});
     res.json({ success: true, users });
   } catch (err) {
-    res.status(500).json({ success: false, message: "Error fetching users", error: err.message });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error fetching users",
+        error: err.message,
+      });
   }
 });
-
 
 app.post("/addfriend", async (req, res) => {
   try {
@@ -145,3 +176,85 @@ app.post("/addfriend", async (req, res) => {
     });
   }
 });
+
+// Upload image endpoint
+app.post("/uploadimage", upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded",
+      });
+    }
+
+    const imageUrl = `/uploads/${req.file.filename}`;
+
+    res.json({
+      success: true,
+      imageUrl: imageUrl,
+      message: "Image uploaded successfully",
+    });
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+// Update profile picture endpoint
+app.post("/updatepic", async (req, res) => {
+  try {
+    const { userId, profilePicture } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required",
+      });
+    }
+
+    const user = await userModel.findByIdAndUpdate(
+      userId,
+      { profilePicture: profilePicture || "/src/assets/Profile-PNG-Photo.png" },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Profile picture updated successfully",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        profilePicture: user.profilePicture,
+        createdAt: user.createdAt,
+        friends: user.friends,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating profile picture:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+// app.get("/pic", async (req, res) => {
+//   try {
+//     const users = await userModel.find({}, 'name profilePicture');
+//     res.json({ success: true, users });
+//   }
+//   catch (err) {
+//     res.status(500).json({ success: false, message: "Error fetching profile pictures", error: err.message });
+//   }
+// });
