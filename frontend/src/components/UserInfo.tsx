@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 import UserImage from "./ProfPic/UserProfPic";
+import { Link } from "react-router-dom";
 
 const UserInfo = () => {
   const user = useSelector((state: RootState) => state.social.user);
@@ -13,6 +14,10 @@ const UserInfo = () => {
       <div className="container mx-auto px-4 py-8">
         {isAuthenticated && user ? (
           <>
+
+          <Link to="/friend-requests" className="nav-link">
+  Friend Requests
+</Link>
             <UserImage user={user} />
 
             <h1 className="text-3xl font-bold mb-4">

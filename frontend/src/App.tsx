@@ -6,6 +6,7 @@ import { Provider, useSelector } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import Home from "./components/Home";
 import OthersProfile from "./components/OthersProfile";
+import FriendsRequestsList from "./components/FriendsRequestsList";
 
 function AppRoutes() {
   const isAuth = useSelector(
@@ -26,6 +27,7 @@ function AppRoutes() {
 
 <Route path="/user/:id" element={isAuth ? <OthersProfile /> : <Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/friend-requests" element={<FriendsRequestsList />} />
       </Routes>
     </BrowserRouter>
   );
