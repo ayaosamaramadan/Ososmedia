@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
-import Auth from "./components/Auth";
+import Auth from "./components/Auth/Auth";
 import { store, type RootState } from "./store/store";
 import { Provider, useSelector } from "react-redux";
 import { Toaster } from "react-hot-toast";

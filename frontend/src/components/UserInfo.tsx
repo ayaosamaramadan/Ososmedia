@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
-import UserImage from "./UserImage";
+import UserImage from "./ProfPic/UserProfPic";
 
 const UserInfo = () => {
   const user = useSelector((state: RootState) => state.social.user);
@@ -8,14 +8,12 @@ const UserInfo = () => {
     (state: RootState) => state.social.isAuthenticated
   );
 
-    return (
+  return (
     <>
       <div className="container mx-auto px-4 py-8">
         {isAuthenticated && user ? (
           <>
-          <UserImage
-            user={user}
-          />
+            <UserImage user={user} />
 
             <h1 className="text-3xl font-bold mb-4">
               Welcome back, {user.name}! 🎉

@@ -3,13 +3,18 @@ import { Link } from "react-router-dom";
 import Navi from "./Navi";
 import UserInfo from "./UserInfo";
 import { useEffect, useState } from "react";
-import UserImage from "./UserImage";
+import UserImage from "./ProfPic/UserProfPic";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store";
 
 const Home = () => {
   const [Allusers, setAllUsers] = useState<any[]>([]);
 
+     const userInDB = useSelector((state: RootState) => state.social.user);
+
+
   useEffect(() => {
-    console.log("Fetching all users...");
+  console.log("Fetching all users...");
     fetch("http://localhost:5000/allusers")
       .then((res) => {
         console.log("Response status:", res.status);
@@ -17,9 +22,8 @@ const Home = () => {
       })
       .then((data) => {
         console.log("Fetched data:", data);
-      
-        
-                if (data.success && data.users) {
+
+        if (data.success && data.users) {
           setAllUsers(data.users);
         } else if (Array.isArray(data)) {
           setAllUsers(data);
@@ -43,20 +47,24 @@ const Home = () => {
       </div>
       {Allusers && Allusers.length > 0 ? (
         <ul className="space-y-2">
-          {Allusers.map((user) => (
-           <Link to={`/user/${user._id}`} key={user._id} className="block bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition">
-              <UserImage
-            user={user}
-          />
-             <li key={user._id} className="bg-white shadow rounded-lg p-4">
-              <p>
-                <strong>Name:</strong> {user.name}
-              </p>
-              <p>
-                <strong>Email:</strong> {user.email}
-              </p>
-            </li>
-            </Link>
+          {Allusers.filter((user) =>
+           userInDB && userInDB._id !== user._id
+          ).map((user) => (
+            <Link
+              to={`/user/${user._id}`}
+              key={user._id}
+              className="block bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition"
+              >
+                <UserImage user={user} />
+                <li key={user._id} className="bg-white shadow rounded-lg p-4">
+                  <p>
+                    <strong>Name:</strong> {user.name}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {user.email}
+                  </p>
+                </li>
+              </Link>
           ))}
         </ul>
       ) : (

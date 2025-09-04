@@ -1,11 +1,11 @@
-import logoImage from '../assets/logo.png';
+import logoImage from '../../assets/logo.png';
 
 import {  useSelector } from 'react-redux';
-import type { RootState } from '../store/store';
+import type { RootState } from '../../store/store';
 
-import LoginForm from './LoginForm';
+import LoginForm from '../LoginForm';
 
-import RegForm from './RegForm';
+import RegForm from '../RegForm';
 
 const Auth = () => {
      const selector = useSelector((state: RootState) => state.social)
