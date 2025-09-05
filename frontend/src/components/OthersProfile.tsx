@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import AddFriendButton from "./AddFriendButton";
 import UserImage from "./ProfPic/UserProfPic";
+import axios from "axios";
 
 const OthersProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -11,17 +12,15 @@ const OthersProfile = () => {
 
   useEffect(() => {
     console.log("Fetching all users...");
-    fetch("http://localhost:5000/allusers")
-      .then((res) => {
-        console.log("Response status:", res.status);
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Fetched data:", data);
-        if (data.success && data.users) {
-          setAllUsers(data.users);
-        } else if (Array.isArray(data)) {
-          setAllUsers(data);
+    axios
+      .get("http://localhost:5000/allusers")
+      .then((response) => {
+        console.log("Response status:", response.status);
+        console.log("Fetched data:", response.data);
+        if (response.data.success && response.data.users) {
+          setAllUsers(response.data.users);
+        } else if (Array.isArray(response.data)) {
+          setAllUsers(response.data);
         } else {
           setAllUsers([]);
         }

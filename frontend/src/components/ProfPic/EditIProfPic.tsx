@@ -2,10 +2,16 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 import { setUser, type User } from "../../store/slice";
 import toast from "react-hot-toast";
+import axios from "axios";
 
-const EditProfilePicture = ({ user , setPreviewImage }: { user: User, setPreviewImage: (imageUrl: string) => void }) => {
+const EditProfilePicture = ({
+  user,
+  setPreviewImage,
+}: {
+  user: User;
+  setPreviewImage: (imageUrl: string) => void;
+}) => {
   const dispatch = useDispatch();
-
 
   const userInDB = useSelector((state: RootState) => state.social.user);
   const isAuthenticated = useSelector(
@@ -25,35 +31,34 @@ const EditProfilePicture = ({ user , setPreviewImage }: { user: User, setPreview
     };
     reader.readAsDataURL(file);
 
-     try {
+    try {
       const formData = new FormData();
       formData.append("image", file);
       formData.append("userId", user._id);
 
-      const response = await fetch("http://localhost:5000/uploadimage", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-
-        const updateResponse = await fetch("http://localhost:5000/updatepic", {
-          method: "POST",
+      const response = await axios.post(
+        "http://localhost:5000/uploadimage",
+        formData,
+        {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
-          body: JSON.stringify({
-            userId: user._id,
-            profilePicture: result.imageUrl,
-          }),
-        });
+        }
+      );
 
-        if (updateResponse.ok) {
-          const updateResult = await updateResponse.json();
-          dispatch(setUser(updateResult.user));
-          setPreviewImage(""); 
-              toast.success("Profile picture updated successfully!");
+      if (response.data.success) {
+        const updateResponse = await axios.post(
+          "http://localhost:5000/updatepic",
+          {
+            userId: user._id,
+            profilePicture: response.data.imageUrl,
+          }
+        );
+
+        if (updateResponse.data.success) {
+          dispatch(setUser(updateResponse.data.user));
+          setPreviewImage("");
+          toast.success("Profile picture updated successfully!");
         }
       }
     } catch (error) {
@@ -64,7 +69,6 @@ const EditProfilePicture = ({ user , setPreviewImage }: { user: User, setPreview
 
   return (
     <>
-      
       {isAuthenticated && userInDB && userInDB._id === user._id && (
         <label className="bg-green-400 text-white px-4 py-2 rounded hover:bg-green-500 transition cursor-pointer mb-4 inline-block">
           <input

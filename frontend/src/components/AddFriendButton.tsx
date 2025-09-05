@@ -1,76 +1,60 @@
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 import { useState } from "react";
+import axios from "axios";
 
 const AddFriendButton = ({ userId }: { userId: string }) => {
-  const user = useSelector((state: RootState) => state.social.user);
+  const loggedInUser = useSelector((state: RootState) => state.social.user);
 
   const [isAlreadyFriend, setIsAlreadyFriend] = useState(
-    user?.friends?.includes(userId) || false
+    loggedInUser?.friends?.includes(userId) || false
   );
   const [requestSent, setRequestSent] = useState(false);
 
-  const isOwnProfile = user?._id === userId;
-  if (isOwnProfile || !user) {
+  const isOwnProfile = loggedInUser?._id === userId;
+  if (isOwnProfile || !loggedInUser) {
     return null;
   }
 
-  const handleToggleFriend = () => {
+  const handleToggleFriend = async () => {
     if (isAlreadyFriend) {
-     
-      fetch(`http://localhost:5000/removefriend`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: user._id,
-          friendId: userId,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            console.log("Friend removed successfully!");
-            setIsAlreadyFriend(false);
-          } else {
-            console.log("Failed to remove friend.");
+      try {
+        const response = await axios.post(
+          `http://localhost:5000/removefriend`,
+          {
+            userId: loggedInUser._id,
+            friendId: userId,
           }
-        })
-        .catch((error) => {
-          console.error("Error removing friend:", error);
-        })
-        .finally(() => {
-        
-        });
+        );
+
+        if (response.data.success) {
+          console.log("Friend removed successfully!");
+          setIsAlreadyFriend(false);
+        } else {
+          console.log("Failed to remove friend.");
+        }
+      } catch (error) {
+        console.error("Error removing friend:", error);
+      }
     } else if (!requestSent) {
-      // Send friend request
-    
-      fetch(`http://localhost:5000/sendfriendrequest`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fromUserId: user._id,
-          toUserId: userId,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            console.log("Friend request sent successfully!");
-            setRequestSent(true);
-          } else {
-            console.log("Failed to send friend request.");
+      try {
+        const response = await axios.post(
+          `http://localhost:5000/sendfriendrequest`,
+          {
+            fromUserId: loggedInUser._id,
+            toUserId: userId,
           }
-        })
-        .catch((error) => {
-          console.error("Error sending friend request:", error);
-        })
-        .finally(() => {
-         
-        });
+        );
+
+        if (response.data.success) {
+          console.log("Friend request sent successfully!");
+          setRequestSent(true);
+        } else {
+          console.log("Failed to send friend request.");
+        }
+      } catch (error) {
+        console.error("Error sending friend request:", error);
+      }
     }
   };
 
@@ -85,13 +69,11 @@ const AddFriendButton = ({ userId }: { userId: string }) => {
           : "bg-blue-500 hover:bg-blue-600 text-white"
       }`}
     >
-      {
-         isAlreadyFriend
+      {isAlreadyFriend
         ? "Remove Friend"
         : requestSent
         ? "Request Sent"
-        : "Send Request"
-      }
+        : "Send Request"}
     </button>
   );
 };

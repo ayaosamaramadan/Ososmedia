@@ -6,27 +6,25 @@ import { useEffect, useState } from "react";
 import UserImage from "./ProfPic/UserProfPic";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
+import axios from "axios";
 
 const Home = () => {
   const [Allusers, setAllUsers] = useState<any[]>([]);
 
-     const userInDB = useSelector((state: RootState) => state.social.user);
-
+  const userInDB = useSelector((state: RootState) => state.social.user);
 
   useEffect(() => {
-  console.log("Fetching all users...");
-    fetch("http://localhost:5000/allusers")
-      .then((res) => {
-        console.log("Response status:", res.status);
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Fetched data:", data);
+    console.log("Fetching all users...");
+    axios
+      .get("http://localhost:5000/allusers")
+      .then((response) => {
+        console.log("Response status:", response.status);
+        console.log("Fetched data:", response.data);
 
-        if (data.success && data.users) {
-          setAllUsers(data.users);
-        } else if (Array.isArray(data)) {
-          setAllUsers(data);
+        if (response.data.success && response.data.users) {
+          setAllUsers(response.data.users);
+        } else if (Array.isArray(response.data)) {
+          setAllUsers(response.data);
         } else {
           setAllUsers([]);
         }
@@ -47,13 +45,12 @@ const Home = () => {
       </div>
       {Allusers && Allusers.length > 0 ? (
         <ul className="space-y-2">
-          {Allusers.filter((user) =>
-           userInDB && userInDB._id !== user._id
-          ).map((user) => (
-            <Link
-              to={`/user/${user._id}`}
-              key={user._id}
-              className="block bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition"
+          {Allusers.filter((user) => userInDB && userInDB._id !== user._id).map(
+            (user) => (
+              <Link
+                to={`/user/${user._id}`}
+                key={user._id}
+                className="block bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition"
               >
                 <UserImage user={user} />
                 <li key={user._id} className="bg-white shadow rounded-lg p-4">
@@ -65,7 +62,8 @@ const Home = () => {
                   </p>
                 </li>
               </Link>
-          ))}
+            )
+          )}
         </ul>
       ) : (
         <p>No users found.</p>

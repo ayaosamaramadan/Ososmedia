@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../store/store";
 import { addFriend } from "../store/slice";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 interface FriendRequest {
@@ -36,13 +37,12 @@ const FriendsRequestsList = () => {
       setLoading(true);
       setError("");
 
-      const response = await fetch(
+      const response = await axios.get(
         `http://localhost:5000/friendsrequests/${user._id}`
       );
 
-      if (response.ok) {
-        const result = await response.json();
-        const validRequests = (result.friendsRequests || [])
+      if (response.data.success) {
+        const validRequests = (response.data.friendsRequests || [])
           .filter((request: any) => request && (request._id || request.id))
           .map((request: any, index: number) => ({
             _id: request._id || request.id || `temp-id-${index}`,
@@ -53,7 +53,7 @@ const FriendsRequestsList = () => {
 
         setFriendRequests(validRequests);
       } else {
-        setError(`Failed to fetch friend requests: ${response.status}`);
+        setError(`Failed to fetch friend requests`);
       }
     } catch (err) {
       console.error("Error fetching friend requests:", err);
@@ -66,28 +66,22 @@ const FriendsRequestsList = () => {
   // Accept friend request
   const acceptFriendRequest = async (requesterId: string) => {
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `http://localhost:5000/acceptfriendrequest`,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: user?._id,
-            requesterId: requesterId,
-          }),
+          userId: user?._id,
+          requesterId: requesterId,
         }
       );
 
-      if (response.ok) {
+      if (response.data.success) {
         setFriendRequests((prev) =>
           prev.filter((request) => request._id !== requesterId)
         );
 
         dispatch(addFriend(requesterId));
 
-       toast.success("Friend request accepted!");
+        toast.success("Friend request accepted!");
       } else {
         toast.error("Failed to accept friend request");
       }
@@ -100,21 +94,15 @@ const FriendsRequestsList = () => {
   // Reject friend request
   const rejectFriendRequest = async (requesterId: string) => {
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `http://localhost:5000/rejectfriendrequest`,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: user?._id,
-            requesterId: requesterId,
-          }),
+          userId: user?._id,
+          requesterId: requesterId,
         }
       );
 
-      if (response.ok) {
+      if (response.data.success) {
         // Remove the request from the list
         setFriendRequests((prev) =>
           prev.filter((request) => request._id !== requesterId)
