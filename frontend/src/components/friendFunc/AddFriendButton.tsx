@@ -1,7 +1,8 @@
 import { useSelector } from "react-redux";
-import type { RootState } from "../store/store";
+import type { RootState } from "../../store/store";
 import { useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const AddFriendButton = ({ userId }: { userId: string }) => {
   const loggedInUser = useSelector((state: RootState) => state.social.user);
@@ -47,10 +48,10 @@ const AddFriendButton = ({ userId }: { userId: string }) => {
         );
 
         if (response.data.success) {
-          console.log("Friend request sent successfully!");
+          toast.success("Friend request sent successfully!");
           setRequestSent(true);
         } else {
-          console.log("Failed to send friend request.");
+          toast.error("Failed to send friend request.");
         }
       } catch (error) {
         console.error("Error sending friend request:", error);

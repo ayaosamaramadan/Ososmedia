@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import AddFriendButton from "./AddFriendButton";
+import AddFriendButton from "./friendFunc/AddFriendButton";
 import UserImage from "./ProfPic/UserProfPic";
 import axios from "axios";
 

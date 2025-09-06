@@ -14,10 +14,9 @@ const UserInfo = () => {
       <div className="container mx-auto px-4 py-8">
         {isAuthenticated && user ? (
           <>
-
-          <Link to="/friend-requests" className="nav-link">
-  Friend Requests
-</Link>
+            <Link to="/friend-requests" className="nav-link">
+              Friend Requests
+            </Link>
             <UserImage user={user} />
 
             <h1 className="text-3xl font-bold mb-4">

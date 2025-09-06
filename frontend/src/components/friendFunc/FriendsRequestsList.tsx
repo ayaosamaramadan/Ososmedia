@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState } from "../store/store";
-import { addFriend } from "../store/slice";
+import type { RootState } from "../../store/store";
+import { addFriend } from "../../store/slice";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -15,8 +15,6 @@ interface FriendRequest {
 
 const FriendsRequestsList = () => {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>("");
 
   const user = useSelector((state: RootState) => state.social.user);
   const isAuthenticated = useSelector(
@@ -29,13 +27,12 @@ const FriendsRequestsList = () => {
   // Fetch friend requests
   const fetchFriendRequests = async () => {
     if (!user?._id) {
-      setLoading(false);
+      
       return;
     }
 
     try {
-      setLoading(true);
-      setError("");
+   
 
       const response = await axios.get(
         `http://localhost:5000/friendsrequests/${user._id}`
@@ -52,15 +49,10 @@ const FriendsRequestsList = () => {
           }));
 
         setFriendRequests(validRequests);
-      } else {
-        setError(`Failed to fetch friend requests`);
-      }
+      } 
     } catch (err) {
       console.error("Error fetching friend requests:", err);
-      setError("Server connection error");
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   // Accept friend request
@@ -120,12 +112,11 @@ const FriendsRequestsList = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       fetchFriendRequests();
-    } else {
-      setLoading(false);
     }
   }, [isAuthenticated, user]);
 
   // Helper function for image URL
+
   const getImageUrl = (profilePicture?: string) => {
     if (!profilePicture) return defaultProfilePic;
 
@@ -137,44 +128,6 @@ const FriendsRequestsList = () => {
 
     return profilePicture;
   };
-
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-600">
-            Please log in to view friend requests
-          </h2>
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <p className="text-lg">Loading friend requests...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-red-600">
-          <p className="text-lg">{error}</p>
-          <button
-            onClick={fetchFriendRequests}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto px-4 py-8">
